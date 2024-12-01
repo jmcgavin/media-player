@@ -1,3 +1,6 @@
-# Electron Vite + React Template
+# Media Player
 
-This template provides a minimal setup to get Electron and React working in Vite.
+## Ant Design
+
+- Components: https://ant.design/components/overview/
+- CSS Tokens: https://ant.design/docs/react/customize-theme#api

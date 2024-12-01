@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { BrowserWindow, app, shell } from 'electron'
 import contextMenu from 'electron-context-menu'
-import { fileURLToPath } from 'node:url'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -58,7 +59,8 @@ const createWindow = () => {
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
     win.webContents.openDevTools()
-  } else {
+  }
+  else {
     win.loadFile(path.join(RENDERER_DIST, 'index.html'))
   }
 }

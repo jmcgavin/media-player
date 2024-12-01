@@ -1,8 +1,8 @@
+import react from '@vitejs/plugin-react'
+import path from 'node:path'
 import { defineConfig } from 'vite'
 // eslint-disable-next-line import/no-unresolved
 import electron from 'vite-plugin-electron/simple'
-import path from 'node:path'
-import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,8 +23,7 @@ export default defineConfig({
       // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
       renderer:
         process.env.NODE_ENV === 'test'
-          ? // https://github.com/electron-vite/vite-plugin-electron-renderer/issues/78#issuecomment-2053600808
-            undefined
+          ? undefined // https://github.com/electron-vite/vite-plugin-electron-renderer/issues/78#issuecomment-2053600808
           : {},
     }),
   ],

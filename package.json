@@ -1,5 +1,5 @@
 {
-  "name": "@jmcgavin/electron-vite-react-template",
+  "name": "@jmcgavin/media-player",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,22 +8,24 @@
     "name": "jmcgavin"
   },
   "license": "MIT",
-  "description": "Electron Vite template with React and Typescript.",
+  "description": "Media Player.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
-    "lint": "eslint . --ext .ts,.tsx",
-    "lint:fix": "eslint . --fix --ext .ts,.tsx",
-    "format": "npx prettier . --check",
-    "format:fix": "npx prettier . --write",
-    "fix:all": "npm run lint:fix && npm run format:fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
+    "antd": "^5.22.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-resizable-panels": "^2.1.7"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.11.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
@@ -33,13 +35,10 @@
     "electron-builder": "^25.1.8",
     "electron-context-menu": "^4.0.4",
     "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.14",
-    "prettier": "^3.4.1",
     "typescript": "^5.7.2",
     "vite": "^6.0.1",
     "vite-plugin-electron": "^0.29.0",

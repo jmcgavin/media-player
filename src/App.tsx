@@ -1,27 +1,26 @@
-import './App.css'
+import { theme } from 'antd'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+
+import MediaPlayer from './components/MediaPlayer'
+import NavBar from './components/NavBar'
+
+const { useToken } = theme
 
 const App = () => {
-  const handleElectronViteClick = () => {
-    window.open('https://electron-vite.github.io', '_blank')
-  }
-
-  const handleReactClick = () => {
-    window.open('https://react.dev', '_blank')
-  }
+  const { token } = useToken()
 
   return (
-    <>
-      <h1>
-        Electron Vite
-        <br />+<br />
-        React
-      </h1>
-      <section className='container'>
-        <img src='/electron-vite.animate.svg' alt='Vite logo' onClick={handleElectronViteClick} />
-        +
-        <img src='/react.svg' className='react' alt='React logo' onClick={handleReactClick} />
-      </section>
-    </>
+    <main style={{ height: '100vh' }}>
+      <PanelGroup direction="horizontal" autoSaveId="main">
+        <Panel defaultSize={30} minSize={20}>
+          <NavBar />
+        </Panel>
+        <PanelResizeHandle style={{ width: 1, background: token.colorBorder }} />
+        <Panel minSize={50}>
+          <MediaPlayer />
+        </Panel>
+      </PanelGroup>
+    </main>
   )
 }
 
