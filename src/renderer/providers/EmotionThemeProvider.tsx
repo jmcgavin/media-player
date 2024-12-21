@@ -7,11 +7,7 @@ const { useToken } = theme
 const EmotionThemeProvider = ({ children }: PropsWithChildren) => {
   const { token } = useToken()
 
-  return (
-    <ThemeProvider theme={token}>
-      {children}
-    </ThemeProvider>
-  )
+  return <ThemeProvider theme={token}>{children}</ThemeProvider>
 }
 
 export default EmotionThemeProvider

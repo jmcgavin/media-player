@@ -1,112 +1,65 @@
-// @ts-check
-const stylistic = require('@stylistic/eslint-plugin')
-
-const { rules: stylisticRules } = stylistic.configs.customize({
-  indent: 2,
-  quotes: 'single',
-  semi: false,
-  arrowParens: true,
-  commaDangle: 'always-multiline',
-  jsx: true
-})
-
 module.exports = {
   root: true,
   env: {
     browser: true,
-    es2020: true
+    es6: true,
+    node: true,
   },
   settings: {
     react: {
       version: 'detect',
     },
   },
-  ignorePatterns: [
-    '.eslintrc.cjs',
-    'dist',
-    'dist-electron',
-    'release',
-  ],
+  ignorePatterns: ['.eslintrc.cjs', 'forge.config.js'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: [
-      './tsconfig.json',
-      './tsconfig.node.json'
-    ],
+    project: './tsconfig.json',
     tsconfigRootDir: __dirname,
   },
-  plugins: [
-    '@typescript-eslint',
-    'react-refresh',
-    '@stylistic'
-  ],
+  plugins: ['@typescript-eslint', 'react-refresh'],
   extends: [
     'eslint:recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:@typescript-eslint/recommended-type-checked',
-    'plugin:@typescript-eslint/stylistic-type-checked',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'plugin:react/jsx-runtime',
     'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:import/electron',
-    'plugin:@stylistic/recommended-extends',
+    'eslint-config-prettier',
   ],
   rules: {
-    ...stylisticRules,
-    'max-len': [
-      'warn',
-      { 
-        'code': 100,
-        'tabWidth': 2,
-        'ignoreComments': true,
-        'ignoreStrings': true,
-        'ignoreUrls': true,
-        'ignoreTemplateLiterals': true,
-      },
-    ],
     'react-refresh/only-export-components': [
       'warn',
       {
-        'allowConstantExport': true
-      }
+        allowConstantExport: true,
+      },
     ],
     'sort-imports': [
       'warn',
       {
-        'ignoreDeclarationSort': true
-      }
+        ignoreDeclarationSort: true,
+      },
     ],
     'import/order': [
       'warn',
       {
-        'groups': [
-          [
-            'builtin',
-            'external'
-          ],
-          'internal',
-          [
-            'sibling',
-            'parent',
-            'index'
-          ]
-        ],
-        'pathGroups': [
+        groups: [['builtin', 'external'], 'internal', ['sibling', 'parent', 'index']],
+        pathGroups: [
           {
-            'pattern': '~**',
-            'group': 'internal'
-          }
+            pattern: '~**',
+            group: 'internal',
+          },
         ],
-        'pathGroupsExcludedImportTypes': [],
+        pathGroupsExcludedImportTypes: [],
         'newlines-between': 'always',
-        'alphabetize': {
-          'order': 'asc',
-          'caseInsensitive': true
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
         },
-        'warnOnUnassignedImports': true
+        warnOnUnassignedImports: true,
       },
     ],
   },
