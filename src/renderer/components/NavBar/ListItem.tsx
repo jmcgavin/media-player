@@ -111,7 +111,7 @@ const ListItem = ({
           </Text>
           <Text ellipsis={true}>
             <strong>Type: </strong>
-            {datum.dataType}
+            {datum.dataType.charAt(0).toUpperCase() + datum.dataType.slice(1)}
           </Text>
           {datum.dataType === 'video' && (
             <Text ellipsis={true}>
