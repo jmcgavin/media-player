@@ -110,7 +110,7 @@ ipcMain.handle('dialog:openFiles', async (event, { recursive }) => {
   const paths: string[] = []
   const window = BrowserWindow.fromWebContents(event.sender)
   const result = await dialog.showOpenDialog(window, {
-    properties: ['openDirectory', 'openFile', 'multiselectedIndexs'],
+    properties: ['openDirectory', 'openFile', 'multiSelections'],
     filters: [{ name: 'Media', extensions: FILE_TYPES }],
   })
 

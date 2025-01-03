@@ -18,29 +18,30 @@ const StyledSection = styled.section`
 type Props = {
   data: Data[]
   excludedIds: string[]
-  handleSetRandomizedDataOrder: () => void
-  randomizedDataOrder: number[]
-  selectedIndex: number | undefined
-  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>
+  handleSetRandomIndexOrder: () => void
+  randomIndexOrder: number[]
+  selectedId: string | undefined
+  setSelectedId: React.Dispatch<React.SetStateAction<string>>
 }
 
 const MediaPlayer = ({
   data,
-  excludedIds,
-  handleSetRandomizedDataOrder,
-  randomizedDataOrder,
-  selectedIndex,
-  setSelectedIndex,
+  // excludedIds,
+  handleSetRandomIndexOrder,
+  randomIndexOrder,
+  selectedId,
+  setSelectedId,
 }: Props) => {
   const [autoplay, setAutoplay] = useState(false)
   const [loop, setLoop] = useState(false)
   const [muted, setMuted] = useState(false)
+  const [selectedIndex, setSelectedIndex] = useState<number | undefined>()
   const [shuffle, setShuffle] = useState(false)
   const [imageDuration, setImageDuration] = useState(10)
 
   const handleSetShuffle = (shuffle: boolean) => {
     if (shuffle) {
-      handleSetRandomizedDataOrder()
+      handleSetRandomIndexOrder()
     }
     setShuffle(shuffle)
   }
@@ -49,17 +50,25 @@ const MediaPlayer = ({
     return () => {
       if (autoplay && selectedIndex !== undefined) {
         if (shuffle) {
-          const currentIndex = randomizedDataOrder.findIndex((index) => index === selectedIndex)
-          const nextIndex = randomizedDataOrder[(currentIndex + 1) % randomizedDataOrder.length]
-          setSelectedIndex(nextIndex)
+          const nextIndex = randomIndexOrder[(selectedIndex + 1) % randomIndexOrder.length]
+          setSelectedId(data[nextIndex].id)
         } else if (selectedIndex + 1 === data.length) {
-          setSelectedIndex(0)
+          setSelectedId(data[0].id)
         } else {
-          setSelectedIndex(selectedIndex + 1)
+          const nextIndex = selectedIndex + 1
+          setSelectedId(data[nextIndex].id)
         }
       }
     }
-  }, [autoplay, shuffle, randomizedDataOrder, selectedIndex, data.length, setSelectedIndex])
+  }, [autoplay, data, randomIndexOrder, selectedIndex, setSelectedId, shuffle])
+
+  useEffect(() => {
+    if (selectedId) {
+      setSelectedIndex(data.findIndex((datum) => datum.id === selectedId))
+    } else {
+      setSelectedIndex(undefined)
+    }
+  }, [data, selectedId])
 
   useEffect(() => {
     if (autoplay && selectedIndex !== undefined && data[selectedIndex].dataType === 'image') {
@@ -69,7 +78,7 @@ const MediaPlayer = ({
 
       return () => clearTimeout(timer)
     }
-  }, [autoplay, data, handleMediaEnd, imageDuration, selectedIndex])
+  }, [autoplay, data, handleMediaEnd, imageDuration, selectedId, selectedIndex])
 
   const handleSetImageDuration = (value: number) => {
     setImageDuration(value)

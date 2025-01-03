@@ -1,5 +1,5 @@
 import { theme } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import type { Data } from 'src/types/data'
 
@@ -12,20 +12,19 @@ const { useToken } = theme
 const App = () => {
   const [data, setData] = useState<Data[]>([])
   const [excludedIds, setExcludedIds] = useState<string[]>([])
-  const [randomizedDataOrder, setRandomizedDataOrder] = useState<number[]>([])
-  const [selectedIndex, setSelectedIndex] = useState<number | undefined>()
+  const [randomIndexOrder, setRandomIndexOrder] = useState<number[]>([])
+  const [selectedId, setSelectedId] = useState<string | undefined>()
   const { token } = useToken()
 
-  console.log(selectedIndex)
+  useEffect(() => {
+    if (data.length) {
+      console.log(data)
+      setSelectedId(data[0].id)
+    }
+  }, [data])
 
-  const handleSetData = (data: Data[]) => {
-    console.log(data)
-    setData(data)
-    setSelectedIndex(0)
-  }
-
-  const handleSetRandomizedDataOrder = () => {
-    setRandomizedDataOrder(randomizeIndices(data))
+  const handleSetRandomIndexOrder = () => {
+    setRandomIndexOrder(randomizeIndices(data))
   }
 
   return (
@@ -34,11 +33,11 @@ const App = () => {
         <NavBar
           data={data}
           excludedIds={excludedIds}
-          setData={handleSetData}
+          setData={setData}
           setExcludedIds={setExcludedIds}
-          selectedIndex={selectedIndex}
-          setSelectedIndex={setSelectedIndex}
-          handleSetRandomizedDataOrder={handleSetRandomizedDataOrder}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
+          handleSetRandomIndexOrder={handleSetRandomIndexOrder}
         />
       </Panel>
       <PanelResizeHandle style={{ width: 1, background: token.colorBorder }} />
@@ -46,10 +45,10 @@ const App = () => {
         <MediaPlayer
           data={data}
           excludedIds={excludedIds}
-          selectedIndex={selectedIndex}
-          setSelectedIndex={setSelectedIndex}
-          randomizedDataOrder={randomizedDataOrder}
-          handleSetRandomizedDataOrder={handleSetRandomizedDataOrder}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
+          randomIndexOrder={randomIndexOrder}
+          handleSetRandomIndexOrder={handleSetRandomIndexOrder}
         />
       </Panel>
     </PanelGroup>

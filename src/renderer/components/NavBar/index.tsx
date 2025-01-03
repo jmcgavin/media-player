@@ -21,34 +21,32 @@ const List = styled.ul`
 type Props = {
   data: Data[]
   excludedIds: string[]
-  selectedIndex: number | undefined
+  selectedId: string | undefined
   setData: React.Dispatch<React.SetStateAction<Data[]>>
   setExcludedIds: React.Dispatch<React.SetStateAction<string[]>>
-  setSelectedIndex: React.Dispatch<React.SetStateAction<number | undefined>>
-  handleSetRandomizedDataOrder: () => void
+  setSelectedId: React.Dispatch<React.SetStateAction<string | undefined>>
+  handleSetRandomIndexOrder: () => void
 }
 
 const NavBar = ({
   data,
   excludedIds,
-  selectedIndex,
+  selectedId,
   setData,
   setExcludedIds,
-  setSelectedIndex,
-  handleSetRandomizedDataOrder
+  setSelectedId,
+  handleSetRandomIndexOrder
 }: Props) => {
   const handleSetExclude = (id: string, exclude: boolean) => {
     if (exclude) {
       setExcludedIds([...excludedIds, id])
-      if (selectedIndex !== undefined && id === data[selectedIndex].id) {
-        setSelectedIndex(undefined)
+      if (id === selectedId) {
+        setSelectedId(undefined)
       }
     } else {
       setExcludedIds(excludedIds.filter((excludedId) => excludedId !== id))
     }
   }
-
-  console.log(excludedIds)
 
   return data.length ? (
     <List>
@@ -58,10 +56,10 @@ const NavBar = ({
           datum={datum}
           exclude={excludedIds.includes(datum.id)}
           handleSetExclude={handleSetExclude}
-          handleSetRandomizedDataOrder={handleSetRandomizedDataOrder}
+          handleSetRandomIndexOrder={handleSetRandomIndexOrder}
           index={index}
-          selectedIndex={selectedIndex}
-          setSelectedIndex={setSelectedIndex}
+          selectedId={selectedId}
+          setSelectedId={setSelectedId}
         />
       ))}
     </List>

@@ -58,19 +58,18 @@ type Props = {
   exclude: boolean
   handleSetExclude: (id: string, exclude: boolean) => void
   index: number
-  selectedIndex: number | undefined
-  setSelectedIndex: React.Dispatch<React.SetStateAction<number | undefined>>
-  handleSetRandomizedDataOrder: () => void
+  selectedId: string | undefined
+  setSelectedId: React.Dispatch<React.SetStateAction<string | undefined>>
+  handleSetRandomIndexOrder: () => void
 }
 
 const ListItem = ({
   datum,
   exclude,
   handleSetExclude,
-  index,
-  selectedIndex,
-  setSelectedIndex,
-  handleSetRandomizedDataOrder
+  selectedId,
+  setSelectedId,
+  handleSetRandomIndexOrder
 }: Props) => {
   const [videoDuration, setVideoDuration] = useState<string>('')
   const videoPlayer = useRef<HTMLVideoElement>(null)
@@ -82,16 +81,16 @@ const ListItem = ({
   }
 
   const handleClick = () => {
-    if (index === selectedIndex) {
-      setSelectedIndex(undefined)
+    if (datum.id === selectedId) {
+      setSelectedId(undefined)
     } else if (!exclude) {
-      handleSetRandomizedDataOrder()
-      setSelectedIndex(index)
+      handleSetRandomIndexOrder()
+      setSelectedId(datum.id)
     }
   }
 
   return (
-    <Container onClick={handleClick} active={selectedIndex === index} disabled={exclude}>
+    <Container onClick={handleClick} active={datum.id === selectedId} disabled={exclude}>
       <Checkbox
         checked={!exclude}
         onClick={(e) => e.stopPropagation()}
