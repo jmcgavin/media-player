@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
+import crypto from 'crypto'
+import { BrowserWindow, app, dialog, ipcMain, protocol, shell } from 'electron'
 import contextMenu from 'electron-context-menu'
 import started from 'electron-squirrel-startup'
-import * as fs from 'fs'
+import { promises as fs } from 'fs'
 import { glob } from 'glob'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { SUPPORTED_FILE_EXTENSIONS } from '../constants'
+
+import { FILE_TYPES, IMAGE_FILE_TYPES } from '../constants'
+import type { Data } from '../types/data'
 
 process.env.APP_ROOT = path.join(import.meta.dirname, '..')
 
@@ -15,6 +16,8 @@ export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron')
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist')
 
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST
+
+const MEDIA_PROTOCOL_SCHEME = 'media'
 
 const createWindow = async () => {
   // Create the browser window.
@@ -54,11 +57,33 @@ if (started) {
   app.quit()
 }
 
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: MEDIA_PROTOCOL_SCHEME,
+    privileges: {
+      secure: true,
+      standard: true,
+      stream: true,
+      supportFetchAPI: true,
+      bypassCSP: true,
+    },
+  },
+])
+
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   createWindow().catch((err) => {
     console.error('Error creating window:', err)
+  })
+
+  protocol.registerFileProtocol(MEDIA_PROTOCOL_SCHEME, (request, callback) => {
+    const url = request.url.replace(`${MEDIA_PROTOCOL_SCHEME}://`, '')
+    try {
+      return callback(decodeURIComponent(url))
+    } catch (error) {
+      console.error(error)
+    }
   })
 })
 
@@ -81,28 +106,41 @@ app.on('activate', () => {
 })
 
 // ipcMain handlers
-ipcMain.handle('dialog:openFiles', async (event, recursively) => {
+ipcMain.handle('dialog:openFiles', async (event, { recursive }) => {
+  const paths: string[] = []
   const window = BrowserWindow.fromWebContents(event.sender)
   const result = await dialog.showOpenDialog(window, {
-    properties: ['openDirectory', 'openFile', 'multiSelections'],
+    properties: ['openDirectory', 'openFile', 'multiselectedIndexs'],
+    filters: [{ name: 'Media', extensions: FILE_TYPES }],
   })
 
-  console.log('result', result)
+  for (const filePath of result.filePaths) {
+    const stats = await fs.stat(filePath)
 
-  if (result.canceled) {
-    return []
-  } else {
-    const files = []
-
-    for (const rootDir of result.filePaths) {
-      const pattern = path.join(rootDir, '**', `*.{${SUPPORTED_FILE_EXTENSIONS.join(',')}}`)
-      const filePaths = await glob(pattern, { nocase: true })
-      console.log('filePaths', filePaths)
-
-      files.push(...filePaths.map(filePath => ({
-        filePath
-      })))
+    if (stats.isFile()) {
+      paths.push(filePath)
     }
-    return files
+
+    if (stats.isDirectory()) {
+      const pattern = recursive
+        ? path.join(filePath, '**', `*.{${FILE_TYPES.join(',')}}`)
+        : path.join(filePath, `*.{${FILE_TYPES.join(',')}}`)
+      const nestedPaths = await glob(pattern, { nocase: true })
+      paths.push(...nestedPaths)
+    }
   }
+
+  const data: Data[] = paths.map((filePath) => {
+    const extension = path.extname(filePath).slice(1) // File extension without "."
+    const imageTypeRegex = new RegExp(IMAGE_FILE_TYPES.join('|'), 'i')
+    return {
+      id: crypto.randomUUID(),
+      name: path.basename(filePath),
+      path: filePath,
+      extension,
+      dataType: imageTypeRegex.test(extension) ? 'image' : 'video',
+    }
+  })
+
+  return data
 })

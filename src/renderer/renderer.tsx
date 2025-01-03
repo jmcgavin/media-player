@@ -13,12 +13,12 @@ const theme: ThemeConfig = {
     colorSuccess: '#86c626',
     colorWarning: '#eca31c',
     colorError: '#d94c62',
-    borderRadius: 2,
+    borderRadius: 4,
   },
   algorithm: antdTheme.compactAlgorithm,
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider theme={theme}>
       <EmotionThemeProvider>
