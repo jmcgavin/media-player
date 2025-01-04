@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 
 import { secondsToTime } from '../../../helpers'
 import type { Data } from '../../../types/data'
+import useData from '../../hooks/useData'
 
 const { Text } = Typography
 
@@ -54,23 +55,20 @@ const StyledImg = styled.div<{ src: string }>`
 `
 
 type Props = {
+  active: boolean
   datum: Data
   exclude: boolean
   handleSetExclude: (id: string, exclude: boolean) => void
   index: number
-  selectedId: string | undefined
-  setSelectedId: React.Dispatch<React.SetStateAction<string | undefined>>
-  handleSetRandomIndexOrder: () => void
 }
 
 const ListItem = ({
   datum,
   exclude,
   handleSetExclude,
-  selectedId,
-  setSelectedId,
-  handleSetRandomIndexOrder
+  active
 }: Props) => {
+  const { setRandomIndexOrder, setSelectedId } = useData()
   const [videoDuration, setVideoDuration] = useState<string>('')
   const videoPlayer = useRef<HTMLVideoElement>(null)
 
@@ -81,16 +79,16 @@ const ListItem = ({
   }
 
   const handleClick = () => {
-    if (datum.id === selectedId) {
+    if (active) {
       setSelectedId(undefined)
     } else if (!exclude) {
-      handleSetRandomIndexOrder()
+      setRandomIndexOrder()
       setSelectedId(datum.id)
     }
   }
 
   return (
-    <Container onClick={handleClick} active={datum.id === selectedId} disabled={exclude}>
+    <Container onClick={handleClick} active={active} disabled={exclude}>
       <Checkbox
         checked={!exclude}
         onClick={(e) => e.stopPropagation()}

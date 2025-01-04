@@ -2,7 +2,9 @@ import styled from '@emotion/styled'
 import { InputNumber, Switch, Typography } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 
-import { Data } from '../../../types/data'
+import useData from '../../hooks/useData'
+import useMediaControls from '../../hooks/useMediaControls'
+
 
 const { Text } = Typography
 
@@ -15,41 +17,22 @@ const StyledSection = styled.section`
   padding: ${(props) => props.theme.paddingLG}px;
 `
 
-type Props = {
-  data: Data[]
-  excludedIds: string[]
-  handleSetRandomIndexOrder: () => void
-  randomIndexOrder: number[]
-  selectedId: string | undefined
-  setSelectedId: React.Dispatch<React.SetStateAction<string>>
-}
-
-const MediaPlayer = ({
-  data,
-  // excludedIds,
-  handleSetRandomIndexOrder,
-  randomIndexOrder,
-  selectedId,
-  setSelectedId,
-}: Props) => {
-  const [autoplay, setAutoplay] = useState(false)
-  const [loop, setLoop] = useState(false)
-  const [muted, setMuted] = useState(false)
+const MediaPlayer = () => {
+  const { data, randomIndexOrder, selectedId, setRandomIndexOrder, setSelectedId } = useData()
+  const mediaControls = useMediaControls()
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>()
-  const [shuffle, setShuffle] = useState(false)
-  const [imageDuration, setImageDuration] = useState(10)
 
   const handleSetShuffle = (shuffle: boolean) => {
     if (shuffle) {
-      handleSetRandomIndexOrder()
+      setRandomIndexOrder()
     }
-    setShuffle(shuffle)
+    mediaControls.setShuffle(shuffle)
   }
 
   const handleMediaEnd = useMemo(() => {
     return () => {
-      if (autoplay && selectedIndex !== undefined) {
-        if (shuffle) {
+      if (mediaControls.autoplay && selectedIndex !== undefined) {
+        if (mediaControls.shuffle) {
           const nextIndex = randomIndexOrder[(selectedIndex + 1) % randomIndexOrder.length]
           setSelectedId(data[nextIndex].id)
         } else if (selectedIndex + 1 === data.length) {
@@ -60,7 +43,7 @@ const MediaPlayer = ({
         }
       }
     }
-  }, [autoplay, data, randomIndexOrder, selectedIndex, setSelectedId, shuffle])
+  }, [data, mediaControls.autoplay, mediaControls.shuffle, randomIndexOrder, selectedIndex, setSelectedId])
 
   useEffect(() => {
     if (selectedId) {
@@ -71,18 +54,14 @@ const MediaPlayer = ({
   }, [data, selectedId])
 
   useEffect(() => {
-    if (autoplay && selectedIndex !== undefined && data[selectedIndex].dataType === 'image') {
+    if (mediaControls.autoplay && selectedIndex !== undefined && data[selectedIndex].dataType === 'image') {
       const timer = setTimeout(() => {
         handleMediaEnd()
-      }, imageDuration * 1000)
+      }, mediaControls.imageDuration * 1000)
 
       return () => clearTimeout(timer)
     }
-  }, [autoplay, data, handleMediaEnd, imageDuration, selectedId, selectedIndex])
-
-  const handleSetImageDuration = (value: number) => {
-    setImageDuration(value)
-  }
+  }, [data, handleMediaEnd, mediaControls.autoplay, mediaControls.imageDuration, selectedId, selectedIndex])
 
   return (
     <StyledSection>
@@ -95,9 +74,9 @@ const MediaPlayer = ({
                 controls
                 width='100%'
                 height='100%'
-                autoPlay={autoplay}
-                loop={loop}
-                muted={muted}
+                autoPlay={mediaControls.autoplay}
+                loop={mediaControls.loop}
+                muted={mediaControls.muted}
                 onEnded={handleMediaEnd}
               >
                 <source src={`media://${data[selectedIndex].path}`} type='video/mp4' />
@@ -108,19 +87,19 @@ const MediaPlayer = ({
           </div>
           <div>
             <Text type='secondary'>Autoplay</Text>
-            <Switch checked={autoplay} onChange={setAutoplay} />
+            <Switch checked={mediaControls.autoplay} onChange={mediaControls.setAutoplay} />
 
             <Text type='secondary'>Loop</Text>
-            <Switch checked={loop} onChange={setLoop} />
+            <Switch checked={mediaControls.loop} onChange={mediaControls.setLoop} />
 
             <Text type='secondary'>Mute</Text>
-            <Switch checked={muted} onChange={setMuted} />
+            <Switch checked={mediaControls.muted} onChange={mediaControls.setMuted} />
 
             <Text type='secondary'>Shuffle</Text>
-            <Switch checked={shuffle} onChange={handleSetShuffle} />
+            <Switch checked={mediaControls.shuffle} onChange={handleSetShuffle} />
 
             <Text type='secondary'>Image Duration</Text>
-            <InputNumber suffix='s' defaultValue={10} min={1} onChange={handleSetImageDuration} />
+            <InputNumber suffix='s' defaultValue={mediaControls.imageDuration} min={1} onChange={(value) => mediaControls.setImageDuration(value!)} />
           </div>
         </>
       ) : (

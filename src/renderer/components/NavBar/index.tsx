@@ -1,8 +1,8 @@
 import styled from '@emotion/styled'
-import type { Data } from 'src/types/data'
 
 import FileSelect from './FileSelect'
 import ListItem from './ListItem'
+import useData from '../../hooks/useData'
 
 const EmptySection = styled.section`
   display: flex;
@@ -18,25 +18,9 @@ const List = styled.ul`
   overflow: auto;
 `
 
-type Props = {
-  data: Data[]
-  excludedIds: string[]
-  selectedId: string | undefined
-  setData: React.Dispatch<React.SetStateAction<Data[]>>
-  setExcludedIds: React.Dispatch<React.SetStateAction<string[]>>
-  setSelectedId: React.Dispatch<React.SetStateAction<string | undefined>>
-  handleSetRandomIndexOrder: () => void
-}
+const NavBar = () => {
+  const { data, excludedIds, selectedId, setData, setExcludedIds, setSelectedId } = useData()
 
-const NavBar = ({
-  data,
-  excludedIds,
-  selectedId,
-  setData,
-  setExcludedIds,
-  setSelectedId,
-  handleSetRandomIndexOrder
-}: Props) => {
   const handleSetExclude = (id: string, exclude: boolean) => {
     if (exclude) {
       setExcludedIds([...excludedIds, id])
@@ -56,10 +40,8 @@ const NavBar = ({
           datum={datum}
           exclude={excludedIds.includes(datum.id)}
           handleSetExclude={handleSetExclude}
-          handleSetRandomIndexOrder={handleSetRandomIndexOrder}
           index={index}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
+          active={datum.id === selectedId}
         />
       ))}
     </List>

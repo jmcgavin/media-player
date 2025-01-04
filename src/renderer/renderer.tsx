@@ -4,7 +4,9 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 
 import App from './App'
+import DataProvider from './providers/DataProvider'
 import EmotionThemeProvider from './providers/EmotionThemeProvider'
+import MediaControlsProvider from './providers/MediaControlsProvider'
 
 const theme: ThemeConfig = {
   token: {
@@ -22,7 +24,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ConfigProvider theme={theme}>
       <EmotionThemeProvider>
-        <App />
+        <DataProvider>
+          <MediaControlsProvider>
+            <App />
+          </MediaControlsProvider>
+        </DataProvider>
       </EmotionThemeProvider>
     </ConfigProvider>
   </React.StrictMode>,
