@@ -8,7 +8,7 @@ export interface DataContextProps {
   excludedIds: string[]
   setExcludedIds: (ids: string[]) => void
   randomIndexOrder: number[]
-  setRandomIndexOrder: () => void
+  setRandomIndexOrder: (firstIndex?: number) => void
   selectedId: string | undefined
   setSelectedId: (id: string | undefined) => void
 }

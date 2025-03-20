@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import MediaControlsContext, { MediaControlsContextProps } from '../contexts/MediaControlsContext'
+import useData from '../hooks/useData'
 
 interface MediaControlsProviderProps {
   children: React.ReactNode
 }
 
 const MediaControlsProvider: React.FC<MediaControlsProviderProps> = ({ children }) => {
+  const { setRandomIndexOrder } = useData()
   const [autoplay, setAutoplay] = useState(false)
   const [loop, setLoop] = useState(false)
   const [muted, setMuted] = useState(false)
@@ -25,6 +27,12 @@ const MediaControlsProvider: React.FC<MediaControlsProviderProps> = ({ children 
     imageDuration,
     setImageDuration,
   }
+
+  useEffect(() => {
+    if (shuffle) {
+      setRandomIndexOrder()
+    }
+  }, [setRandomIndexOrder, shuffle])
 
   return (
     <MediaControlsContext.Provider value={contextValue}>

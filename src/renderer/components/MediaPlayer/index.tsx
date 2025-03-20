@@ -22,28 +22,39 @@ const MediaPlayer = () => {
   const mediaControls = useMediaControls()
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>()
 
-  const handleSetShuffle = (shuffle: boolean) => {
-    if (shuffle) {
-      setRandomIndexOrder()
-    }
-    mediaControls.setShuffle(shuffle)
-  }
-
   const handleMediaEnd = useMemo(() => {
     return () => {
       if (mediaControls.autoplay && selectedIndex !== undefined) {
         if (mediaControls.shuffle) {
-          const nextIndex = randomIndexOrder[(selectedIndex + 1) % randomIndexOrder.length]
-          setSelectedId(data[nextIndex].id)
+          // Shuffle on - play next
+          console.log('Shuffle on - play next')
+          const getNextIndex = () => {
+            let index = randomIndexOrder.indexOf(selectedIndex) + 1
+            if (index >= randomIndexOrder.length) index = 0
+            return randomIndexOrder[index]
+          }
+          const nextIndex = getNextIndex()
+          const nextData = data[nextIndex]
+          setSelectedId(nextData.id)
+
+          if (randomIndexOrder.indexOf(nextIndex) === randomIndexOrder[randomIndexOrder.length - 1]) {
+            // Shuffle on - reached end of data - reshuffle
+            console.log('Shuffle on - reached end of data - reshuffle')
+            setRandomIndexOrder()
+          }
         } else if (selectedIndex + 1 === data.length) {
+          // Shuffle off - reached end of data - start from 0
+          console.log('Shuffle off - reached end of data - start from 0')
           setSelectedId(data[0].id)
         } else {
+          // Shuffle off - play next
+          console.log('Shuffle off - play next')
           const nextIndex = selectedIndex + 1
           setSelectedId(data[nextIndex].id)
         }
       }
     }
-  }, [data, mediaControls.autoplay, mediaControls.shuffle, randomIndexOrder, selectedIndex, setSelectedId])
+  }, [data, mediaControls.autoplay, mediaControls.shuffle, randomIndexOrder, selectedIndex, setRandomIndexOrder, setSelectedId])
 
   useEffect(() => {
     if (selectedId) {
@@ -96,7 +107,7 @@ const MediaPlayer = () => {
             <Switch checked={mediaControls.muted} onChange={mediaControls.setMuted} />
 
             <Text type='secondary'>Shuffle</Text>
-            <Switch checked={mediaControls.shuffle} onChange={handleSetShuffle} />
+            <Switch checked={mediaControls.shuffle} onChange={mediaControls.setShuffle} />
 
             <Text type='secondary'>Image Duration</Text>
             <InputNumber suffix='s' defaultValue={mediaControls.imageDuration} min={1} onChange={(value) => mediaControls.setImageDuration(value!)} />

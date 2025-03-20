@@ -14,17 +14,20 @@ const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   const [randomIndexOrder, _setRandomIndexOrder] = useState<number[]>([])
   const [selectedId, setSelectedId] = useState<string | undefined>()
 
-
   // Set first ID when data is initialized
   useEffect(() => {
     if (data.length) {
-      console.log(data)
+      console.log('data', data)
       setSelectedId(data[0].id)
     }
   }, [data, setSelectedId])
 
   const setRandomIndexOrder = useCallback(() => {
-    _setRandomIndexOrder(randomizeIndices(data))
+    if (data.length) {
+      const newRandomOrder = randomizeIndices(data)
+      console.log('randomIndexOrder', newRandomOrder)
+      _setRandomIndexOrder(newRandomOrder)
+    }
   }, [data])
 
   const contextValue: DataContextProps = {
